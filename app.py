@@ -34,14 +34,14 @@ st.markdown(f"""
         padding: 20px;
     }}
     
-    /* Sidebar Branding */
-    .brand-text {{ 
-        color: {RAPTIVE_PURPLE}; 
-        font-size: 28px; 
-        font-weight: 900; 
-        letter-spacing: -1px;
-        margin-bottom: 20px; 
-    }}
+    # /* Sidebar Branding */
+    # .brand-text {{ 
+    #     color: {RAPTIVE_PURPLE}; 
+    #     font-size: 28px; 
+    #     font-weight: 900; 
+    #     letter-spacing: -1px;
+    #     margin-bottom: 20px; 
+    # }}
     
     /* Custom Alert Box */
     .stAlert {{
@@ -56,7 +56,7 @@ st.markdown(f"""
 # Sidebar - Interaction Controls
 # ==========================================
 with st.sidebar:
-    st.markdown('<p class="brand-text">RAPTIVE</p>', unsafe_allow_html=True)
+    # st.markdown('<p class="brand-text">RAPTIVE</p>', unsafe_allow_html=True)
     st.title("Simulation Controls")
     st.info("🌟 Developed with Gemini to showcase the power of Central Limit Theorem (CLT).")
     
