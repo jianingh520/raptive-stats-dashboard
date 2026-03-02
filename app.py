@@ -4,11 +4,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # ==========================================
-# Raptive Visual Identity (Design Tokens)
+# Raptive Brand Guidelines (Updated from Official Site)
 # ==========================================
-RAPTIVE_GREEN = "#00A38D"  # Signature Brand Green
-OFF_WHITE = "#F9F9F7"      # Background Off-white
-CHARCOAL = "#1A1A1A"       # Deep Charcoal Text
+RAPTIVE_PURPLE = "#5A61F5"  # Primary Brand Color (Main Distribution)
+RAPTIVE_LIME = "#D5FB70"    # High Highlight (Lime Green)
+RAPTIVE_ORANGE = "#F37555"  # Secondary Highlight (Soft Orange)
+OFF_WHITE = "#F9F9F7"       # Main Background
+CHARCOAL = "#1A1A1A"        # Text
 
 # Page Configuration
 st.set_page_config(
@@ -17,32 +19,55 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS for a Premium UI
+# Custom CSS for Premium UI
 st.markdown(f"""
     <style>
     .main {{ background-color: {OFF_WHITE}; }}
     h1, h2, h3 {{ color: {CHARCOAL}; font-family: 'Inter', sans-serif; }}
-    .stMetric {{ background-color: white; border-radius: 8px; border: 1px solid #E5E5E1; padding: 15px; }}
+    
+    /* Metric Card Styling */
+    [data-testid="stMetric"] {{
+        background-color: white;
+        border-radius: 12px;
+        border-left: 5px solid {RAPTIVE_LIME}; /* Use Lime for Highlight */
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        padding: 20px;
+    }}
+    
+    /* Sidebar Branding */
+    .brand-text {{ 
+        color: {RAPTIVE_PURPLE}; 
+        font-size: 28px; 
+        font-weight: 900; 
+        letter-spacing: -1px;
+        margin-bottom: 20px; 
+    }}
+    
+    /* Custom Info Box */
+    .stAlert {{
+        background-color: white;
+        border: 1px solid {RAPTIVE_PURPLE};
+        border-radius: 8px;
+    }}
     </style>
     """, unsafe_allow_html=True)
 
 # ==========================================
-# Sidebar - Interactive Controls
+# Sidebar - Interaction Controls
 # ==========================================
 with st.sidebar:
-    # Official Raptive Logo
-    st.image("https://raptive.com/wp-content/uploads/2023/04/Raptive_Logo_RGB_Green.svg", width=160)
+    st.markdown('<p class="brand-text">RAPTIVE</p>', unsafe_allow_html=True)
     st.title("Simulation Controls")
-    st.info("💡 Developed in collaboration with Codex/Jules bots to demonstrate the Central Limit Theorem (CLT).")
+    st.info("💡 Developed with Codex/Jules to showcase the power of Central Limit Theorem (CLT).")
     
     st.markdown("---")
-    # User-selectable distributions
     dist_choice = st.selectbox(
         "1. Select Population Distribution",
         ["Exponential (Highly Skewed)", "Uniform (Balanced)"]
     )
     
-    # Sliders for n-size and trials
+    # Using the orange accent for the sliders via custom theme if needed, 
+    # but here we keep standard Streamlit sliders.
     sample_size = st.slider("2. Sample Size (n)", min_value=2, max_value=100, value=30)
     num_simulations = st.slider("3. Number of Trials", min_value=500, max_value=10000, value=2000, step=500)
     
@@ -53,21 +78,15 @@ with st.sidebar:
 # Statistical Logic (Central Limit Theorem)
 # ==========================================
 def run_simulation(dist, n, trials):
-    """
-    Simulates the CLT by calculating sample means over multiple trials.
-    """
     means = []
     for _ in range(trials):
         if dist == "Exponential (Highly Skewed)":
-            # Represents highly skewed raw data (similar to raw web engagement logs)
             sample = np.random.exponential(1, n)
         else:
-            # Represents a balanced/flat distribution
             sample = np.random.uniform(0, 1, n)
         means.append(np.mean(sample))
     return np.array(means)
 
-# Execute simulation
 sample_means = run_simulation(dist_choice, sample_size, num_simulations)
 
 # ==========================================
@@ -75,8 +94,7 @@ sample_means = run_simulation(dist_choice, sample_size, num_simulations)
 # ==========================================
 st.title("🎲 Statistical Property: Central Limit Theorem")
 st.markdown(f"""
-This interactive tool demonstrates a fundamental statistical principle: **Regardless of the underlying population distribution, 
-the distribution of sample means converges to a Normal Distribution as the sample size ($n$) increases.**
+這個工具展示了統計學的核心特性：**不論原始數據分佈如何，只要樣本量 ($n$) 足夠，平均值的分佈都會趨向於正態分佈。**
 """)
 
 col1, col2 = st.columns([1, 2], gap="large")
@@ -84,26 +102,29 @@ col1, col2 = st.columns([1, 2], gap="large")
 with col1:
     st.subheader("Context for Analysis")
     st.write(f"""
-    In our analysis of **4,000 users**, the CLT allows us to trust that our regression coefficients 
-    (such as the **+9.71e-05** for Time on Page) are robust and statistically significant ($t=30.03$).
+    在分析 **4,000 名用戶** 時，即使 **Time on Page** 的原始數據可能極度偏斜，
+    我們依然能依賴 CLT 確保迴歸模型的係數 ($t=30.03$) 在統計上是可靠的。
     """)
     
-    # Metric cards
-    st.metric("Total Simulations Run", f"{num_simulations:,}")
+    # Metrics
+    st.metric("Total Simulations", f"{num_simulations:,}")
     st.metric("Sample Size (n)", sample_size)
-    st.metric("Mean of Sample Means", round(np.mean(sample_means), 3))
+    st.metric("Mean of Means", round(np.mean(sample_means), 3))
     
-    st.success("Conclusion: A larger 'n' leads to a more symmetric (Normal) distribution of means.")
+    # Using the Orange highlight for the result text
+    st.markdown(f"""
+        <div style="padding:15px; border-radius:8px; border: 1px solid {RAPTIVE_ORANGE}; color:{RAPTIVE_ORANGE}; font-weight:bold;">
+        Conclusion: Larger 'n' leads to a more symmetric Normal distribution.
+        </div>
+    """, unsafe_allow_html=True)
 
 with col2:
-    # Visualization using Seaborn & Matplotlib
     fig, ax = plt.subplots(figsize=(10, 6))
     fig.patch.set_facecolor(OFF_WHITE)
     
-    # Histogram + Kernel Density Estimate (KDE)
-    sns.histplot(sample_means, kde=True, color=RAPTIVE_GREEN, bins=40, ax=ax, alpha=0.7)
+    # Use the Brand Purple for the histogram
+    sns.histplot(sample_means, kde=True, color=RAPTIVE_PURPLE, bins=40, ax=ax, alpha=0.8)
     
-    # Chart styling
     ax.set_title(f"Distribution of Sample Means (n={sample_size})", fontsize=15, fontweight='bold', color=CHARCOAL)
     ax.set_xlabel("Mean Value", fontsize=12)
     ax.set_ylabel("Frequency", fontsize=12)
@@ -115,6 +136,6 @@ with col2:
 # Footer
 st.divider()
 st.markdown(
-    "<div style='text-align: center; color: #888;'>© 2024 Raptive Candidate Assessment | Powered by Streamlit & Codex/Jules</div>", 
+    f"<div style='text-align: center; color: #888;'>© 2024 Raptive Candidate Assessment | Powered by Streamlit & Codex/Jules</div>", 
     unsafe_allow_html=True
 )
